@@ -247,4 +247,80 @@ curl -X DELETE -i http://localhost:8080/tasks/<id>
   safe to hit from multiple threads.
 - Replacing the in-memory adapter with a JPA / JDBC implementation only
   requires providing a new `TaskRepository` bean — no other layer changes.
-# india-satcom
+
+---
+
+## 11. AI usage disclosure
+
+Per the "Fair use of AI" clause in the challenge brief, this section records
+how AI assistance was used to build this submission.
+
+### Tool
+
+Claude Code (Anthropic), Sonnet model, running in an agentic CLI session with
+file-edit and shell-execution tools.
+
+### Approach
+
+I treated the AI as a pair-programming collaborator working from a fully
+specified brief. The session followed four phases:
+
+1. **Specification** — provided the full problem statement verbatim and chose
+   the stack (Java + Spring Boot).
+2. **Implementation** — the model produced the DDD-layered code, tests, and
+   README in a single pass, running `mvn test` and live `curl` smoke tests
+   against the running app to verify behaviour end-to-end.
+3. **Spec audit & correction** — I asked the model to re-read the brief and
+   verify the implementation matched it line-by-line. This caught one real
+   deviation (the list endpoint was returning a paged envelope instead of the
+   plain JSON array the brief required) which was then corrected, with tests
+   and README updated to match.
+4. **Test logging polish** — added INFO-level "Input / Result" log lines to
+   every test so the suite output reads as a self-documenting trace of what
+   each test sent in and what came back.
+
+### Prompts used (verbatim)
+
+**Prompt 1 — initial implementation:**
+
+> [pasted the full problem statement from the challenge brief]
+>
+> Let me know if you have any issues. Use JAVA spring boot.
+
+**Prompt 2 — spec compliance audit:**
+
+> check one more time is the problem statement completely matched with the
+> changes
+
+**Prompt 3 — test logging:**
+
+> add some loggers in the test case
+>
+> (follow-up) No not this just like Info logs, no debug logs, also tell what
+> is the value passed and what's the result you got
+
+(A handful of short conversational follow-ups — "continue", port-conflict
+diagnostics, "is everything correct" sanity checks — were used to keep the
+session moving but did not change the design.)
+
+### What I verified myself
+
+- Read the final code in every layer before submitting
+- Ran `mvn test` locally — 33 tests pass
+- Booted the app and hit every endpoint with curl to confirm the behaviour
+  matched the brief
+- Re-read the brief one more time after the audit fix to confirm full
+  compliance
+
+### What the AI did vs. what I did
+
+| Activity | AI | Me |
+|---|---|---|
+| Architectural decisions (DDD layering, ports/adapters) | Proposed | Approved |
+| Code generation (entities, service, controller, repo) | Wrote | Reviewed |
+| Test design and implementation | Wrote | Reviewed |
+| Running the build and tests | Executed | Verified output |
+| Spec-compliance check | Performed on request | Initiated and reviewed |
+| Test logging strategy (INFO-only Input/Result format) | Implemented | Specified the format |
+| Stack choice (Java + Spring Boot) | — | Decided |
+| Final go/no-go on submission | — | Decided |
