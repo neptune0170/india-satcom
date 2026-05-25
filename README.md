@@ -324,3 +324,19 @@ session moving but did not change the design.)
 | Test logging strategy (INFO-only Input/Result format) | Implemented | Specified the format |
 | Stack choice (Java + Spring Boot) | — | Decided |
 | Final go/no-go on submission | — | Decided |
+
+### Why I used a single prompt (token-cost rationale)
+
+Estimated token usage for producing this same deliverable:
+
+| Strategy | Prompts | Est. total tokens | Relative cost |
+|---|---|---|---|
+| **Single prompt (what I used)** | 1 + 2 follow-ups | **~55K – 70K** | **1×** |
+| 4 mega-prompts (one per DDD layer) | 4 | ~180K – 220K | ~3× |
+| 10 step-by-step prompts | 10 | ~380K – 520K | **~6–8×** |
+
+Each prompt re-sends ~30K tokens of system context, so step-by-step pays
+that overhead 10× for the same output. A single prompt was the right call
+because the brief was complete, the task fit in one context window, and
+designing all layers in one pass yields more consistent naming and error
+handling than building them in isolation.
